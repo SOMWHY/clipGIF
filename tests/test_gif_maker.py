@@ -19,7 +19,73 @@ def test_gif_request_rejects_invalid_range(start, end):
 
 
 def test_gif_request_preserves_decimal_seconds():
-    assert GifRequest(start=12.5, end=18).model_dump() == {"start": 12.5, "end": 18.0}
+    request = GifRequest(start=12.5, end=18)
+    assert request.start == 12.5
+    assert request.end == 18.0
+
+
+def test_gif_request_uses_current_export_defaults():
+    request = GifRequest(start=0, end=3)
+    assert request.fps == 12
+    assert request.speed == 1
+    assert request.width is None
+    assert request.height is None
+    assert request.max_colors == 128
+    assert request.dither == "sierra2_4a"
+    assert request.crop is None
+
+
+def test_gif_request_accepts_advanced_export_options():
+    request = GifRequest(
+        start=0,
+        end=3,
+        crop={"x": 0.1, "y": 0.2, "width": 0.5, "height": 0.6},
+        width=640,
+        height=480,
+        fps=20,
+        speed=2,
+        max_colors=256,
+        dither="bayer",
+    )
+    assert request.crop.x == 0.1
+    assert request.width == 640
+    assert request.height == 480
+    assert request.fps == 20
+    assert request.speed == 2
+    assert request.max_colors == 256
+    assert request.dither == "bayer"
+
+
+@pytest.mark.parametrize(
+    "crop",
+    [
+        {"x": -0.1, "y": 0, "width": 0.5, "height": 0.5},
+        {"x": 0.8, "y": 0, "width": 0.3, "height": 0.5},
+        {"x": 0, "y": 0, "width": 0, "height": 0.5},
+        {"x": 0, "y": 0, "width": float("nan"), "height": 0.5},
+    ],
+)
+def test_gif_request_rejects_invalid_crop(crop):
+    with pytest.raises(ValidationError):
+        GifRequest(start=0, end=3, crop=crop)
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"width": 63},
+        {"width": True},
+        {"height": 1281},
+        {"fps": 8},
+        {"fps": True},
+        {"speed": 3},
+        {"max_colors": 32},
+        {"dither": "none"},
+    ],
+)
+def test_gif_request_rejects_out_of_range_export_options(options):
+    with pytest.raises(ValidationError):
+        GifRequest(start=0, end=3, **options)
 
 
 def test_make_gif_uses_two_palette_passes_and_source(monkeypatch, tmp_path):

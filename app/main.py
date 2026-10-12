@@ -60,9 +60,17 @@ app.state.jobs = JobManager()
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_error(request: Request, _exc: RequestValidationError):
+async def validation_error(request: Request, exc: RequestValidationError):
     if request.url.path.endswith("/gif"):
-        detail = "时间段无效：开始时间不能小于 0，结束时间必须大于开始时间，且片段不能超过 60 秒。"
+        errors = exc.errors()
+        is_time_error = any(
+            not error["loc"] or error["loc"][-1] in {"start", "end"}
+            for error in errors
+        )
+        if is_time_error:
+            detail = "时间段无效：开始时间不能小于 0，结束时间必须大于开始时间，且片段不能超过 60 秒。"
+        else:
+            detail = "GIF 导出参数无效，请检查裁切区域、尺寸、速度和画质选项。"
     else:
         detail = "请求参数无效，请检查输入内容和文件格式。"
     return JSONResponse(status_code=422, content={"detail": detail})

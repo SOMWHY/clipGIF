@@ -128,3 +128,20 @@ def test_invalid_gif_parameters_return_chinese_error(client):
     )
     assert response.status_code == 422
     assert "时间段无效" in response.json()["detail"]
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"fps": 8},
+        {"width": True},
+        {"crop": {"x": 0.8, "y": 0, "width": 0.3, "height": 0.5}},
+    ],
+)
+def test_invalid_advanced_gif_options_return_chinese_error(client, options):
+    response = client.post(
+        "/api/previews/unknown/gif",
+        json={"start": 0, "end": 3, **options},
+    )
+    assert response.status_code == 422
+    assert "参数无效" in response.json()["detail"]
