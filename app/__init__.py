@@ -1,0 +1,1 @@
+"""ClipGIF local web application."""

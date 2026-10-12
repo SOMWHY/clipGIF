@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111722">
+  <title>ClipGIF · 本地视频剪辑器</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/timeline.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="ClipGIF 首页">
+        <span class="brand-mark">C</span>
+        <span>Clip<span class="brand-accent">GIF</span></span>
+      </a>
+      <span class="local-badge"><span class="status-dot"></span>仅在本机处理</span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">LOCAL VIDEO WORKBENCH</p>
+        <h1>把精彩片段，<span>剪成 GIF。</span></h1>
+        <p class="intro-copy">粘贴视频链接，拖动时间轴选中片段。视频在你的电脑上处理。</p>
+      </section>
+
+      <section class="panel source-panel" aria-labelledby="source-heading">
+        <div class="section-heading">
+          <div>
+            <p class="step-label">01 / SOURCE</p>
+            <h2 id="source-heading">加载视频</h2>
+          </div>
+          <span id="platformBadge" class="platform-badge" hidden></span>
+        </div>
+        <form id="previewForm">
+          <label for="videoUrl">B 站链接、BV 号或 b23.tv 短链</label>
+          <div class="input-row">
+            <input id="videoUrl" name="url" type="text" autocomplete="url"
+              placeholder="例如 BV1xx411c7mD" required>
+            <button id="loadButton" class="button button-primary" type="submit">
+              <span>加载视频</span><span aria-hidden="true">↗</span>
+            </button>
+          </div>
+          <div class="upload-row">
+            <label class="file-label" for="cookieFile">
+              <span class="upload-icon" aria-hidden="true">＋</span>
+              <span id="cookieLabel">上传 cookies.txt（可选）</span>
+            </label>
+            <input id="cookieFile" name="cookies" type="file" accept=".txt,text/plain">
+            <p>仅在需要登录时使用；文件仅供本次下载，完成后删除。</p>
+          </div>
+        </form>
+      </section>
+
+      <section id="editor" class="panel editor-panel" hidden aria-labelledby="editor-heading">
+        <div class="section-heading">
+          <div>
+            <p class="step-label">02 / SELECT</p>
+            <h2 id="editor-heading">选择片段</h2>
+          </div>
+          <span id="durationBadge" class="duration-badge"></span>
+        </div>
+
+        <div class="video-frame">
+          <video id="sourceVideo" controls playsinline preload="metadata"></video>
+        </div>
+
+        <div class="selection-info">
+          <span class="selection-caption">已选时间</span>
+          <strong id="selectionText">00:00.0 - 00:03.0</strong>
+          <span class="limit-badge">最长 60 秒</span>
+        </div>
+        <div class="timeline-shell">
+          <div class="timeline-track">
+            <div id="selectionFill" class="selection-fill"></div>
+            <input id="startRange" type="range" min="0" max="3" step="0.1" value="0"
+              aria-label="片段起始时间">
+            <input id="endRange" type="range" min="0.1" max="3" step="0.1" value="3"
+              aria-label="片段结束时间">
+          </div>
+          <div class="timeline-scale"><span>00:00</span><span id="midTime">00:01</span><span id="endTime">00:03</span></div>
+        </div>
+        <div class="timeline-actions">
+          <div class="button-group">
+            <button id="previewSelection" class="button button-secondary" type="button">▷ 预览选区</button>
+            <button id="jumpStart" class="button button-quiet" type="button">↤ 跳到起点</button>
+            <button id="jumpEnd" class="button button-quiet" type="button">跳到终点 ↦</button>
+          </div>
+          <span class="keyboard-hint">方向键微调 · 0.1 秒</span>
+        </div>
+
+        <div class="output-row">
+          <div>
+            <p class="step-label">03 / EXPORT</p>
+            <h3>生成 GIF</h3>
+            <p class="muted-copy">采用轻量默认参数，适合快速分享。</p>
+          </div>
+          <button id="generateButton" class="button button-primary" type="button">生成 GIF <span aria-hidden="true">→</span></button>
+        </div>
+      </section>
+
+      <section id="resultPanel" class="panel result-panel" hidden aria-labelledby="result-heading">
+        <div class="section-heading">
+          <div>
+            <p class="step-label">04 / READY</p>
+            <h2 id="result-heading">GIF 已就绪</h2>
+          </div>
+          <a id="downloadButton" class="button button-primary" download>下载 GIF <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="gif-frame"><img id="gifPreview" alt="生成的 GIF 预览"></div>
+      </section>
+
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    </main>
+
+    <footer>
+      <span>ClipGIF · 本地优先的视频小工具</span>
+      <span>请确保你有权下载和使用所处理的视频内容。</span>
+    </footer>
+  </div>
+</body>
+</html>

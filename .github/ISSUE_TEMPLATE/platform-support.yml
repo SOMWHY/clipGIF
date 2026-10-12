@@ -1,0 +1,25 @@
+name: Request operating system support
+description: Propose or report work to add support for an operating system.
+title: "[OS support] "
+body:
+  - type: input
+    id: operating-system
+    attributes:
+      label: Operating system and version
+      placeholder: Ubuntu 24.04, macOS 15, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What should work?
+      description: Include startup, dependency detection, and validation details.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant non-sensitive logs
+      description: Remove tokens, cookies, and personal paths before posting.
+    validations:
+      required: false
