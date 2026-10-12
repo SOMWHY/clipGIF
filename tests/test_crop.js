@@ -8,6 +8,7 @@ function makeElement(bounds = { left: 10, top: 20, width: 200, height: 100 }) {
   return {
     bounds,
     hidden: false,
+    disabled: false,
     textContent: "",
     style: {},
     attributes: {},
@@ -83,8 +84,11 @@ test("crop controller enables, resets, and disables a full-frame crop", () => {
   const crop = window.ClipGifCrop.createCropOverlay({ frame, video, toggle, reset });
 
   assert.equal(crop.region(), null);
-  toggle.dispatch("click");
+  assert.equal(reset.disabled, false);
+  reset.dispatch("click");
   assert.deepEqual(crop.region(), { x: 0, y: 0, width: 1, height: 1 });
+  toggle.dispatch("click");
+  assert.equal(crop.region(), null);
   reset.dispatch("click");
   assert.deepEqual(crop.region(), { x: 0, y: 0, width: 1, height: 1 });
   toggle.dispatch("click");

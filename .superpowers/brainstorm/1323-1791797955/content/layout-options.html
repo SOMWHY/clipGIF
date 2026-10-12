@@ -1,0 +1,85 @@
+<h2>编辑台布局怎么组织？</h2>
+<p class="subtitle">视觉基调已经确认。下面只比较页面结构；小屏幕均会改为单列，当前视频选择、裁切、参数与导出功能都保留。</p>
+
+<style>
+  .layout-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; }
+  .layout-card { overflow:hidden; border:2px solid var(--border); border-radius:10px; background:var(--bg-secondary); cursor:pointer; transition:border-color .18s,transform .18s; }
+  .layout-card:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .layout-card.selected { border-color:var(--selected-border); }
+  .layout-mock { min-height:365px; padding:13px; background:#f5f2e9; color:#24231f; font-family:Arial,sans-serif; }
+  .mock-top { display:flex; justify-content:space-between; padding-bottom:8px; border-bottom:1px solid #cbc7bb; font-size:8px; }
+  .mock-hero { margin:15px 0 10px; font:28px/.98 Georgia,serif; letter-spacing:-.05em; }
+  .mock-hero em { color:#87856c; font-weight:400; }
+  .mock-caption { margin-top:5px; font-size:8px; color:#77746b; }
+  .mock-source { margin-top:12px; padding:9px; border:1px solid #d2cec2; background:#faf9f5; }
+  .mock-label { margin-bottom:6px; color:#77746b; font-size:7px; letter-spacing:.12em; text-transform:uppercase; }
+  .mock-inputrow { display:flex; gap:5px; }
+  .mock-input { flex:1; min-width:0; height:22px; padding:6px; border:1px solid #d2cec2; background:#fffefa; color:#777; font-size:7px; }
+  .mock-btn { padding:6px 9px; background:#354438; color:#fff; font-size:7px; }
+  .mock-work { display:grid; grid-template-columns:1fr; gap:9px; margin-top:11px; }
+  .mock-video { position:relative; height:108px; background:linear-gradient(125deg,#becbbd 0 27%,#e8e3d3 27% 52%,#bdc5ba 52% 72%,#8b967e 72%); }
+  .mock-video:after { content:""; position:absolute; right:12%; top:14%; width:27%; height:72%; background:linear-gradient(145deg,#324b49,#c49a6e 55%,#657365); }
+  .mock-filmstrip { height:18px; margin-top:5px; background:repeating-linear-gradient(90deg,#b5b7a6 0 23px,#ded9cb 23px 26px,#879084 26px 50px); }
+  .mock-track { height:4px; margin-top:8px; background:linear-gradient(90deg,#87917b 0 22%,#58694f 22% 67%,#c9c4b8 67%); }
+  .mock-times { display:flex; justify-content:space-between; margin-top:4px; font-size:7px; color:#77746b; }
+  .mock-controls { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-top:8px; }
+  .mock-field { min-height:30px; padding:5px; border:1px solid #d2cec2; background:#faf9f5; font-size:7px; }
+  .mock-field b { display:block; margin-top:2px; font-size:8px; font-weight:500; }
+  .mock-export { display:flex; justify-content:space-between; align-items:center; margin-top:9px; padding-top:8px; border-top:1px solid #cbc7bb; font-size:8px; }
+  .mock-side { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .mock-side .mock-video { grid-column:1/-1; height:105px; }
+  .mock-side .mock-filmstrip { grid-column:1/-1; }
+  .mock-side .mock-source { grid-column:1/-1; }
+  .mock-aside { padding:8px; border:1px solid #d2cec2; background:#faf9f5; }
+  .mock-aside .mock-controls { grid-template-columns:1fr; }
+  .layout-copy { padding:13px 15px 15px; }
+  .layout-copy h3 { margin:0 0 5px; font-size:14px; }
+  .layout-copy p { margin:0; color:var(--text-secondary); font-size:11px; line-height:1.5; }
+  @media(max-width:650px) { .layout-mock { min-height:350px; } }
+</style>
+
+<div class="layout-options">
+  <article class="layout-card" data-choice="editorial-column" onclick="toggleSelect(this)">
+    <div class="layout-mock">
+      <div class="mock-top"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="mock-hero">留住这一刻。<br><em>让它继续动。</em></div>
+      <div class="mock-caption">A SMALL MOVING IMAGE, MADE ON YOUR DEVICE.</div>
+      <div class="mock-source"><div class="mock-label">01 / 视频来源</div><div class="mock-inputrow"><div class="mock-input">粘贴 B 站链接或 BV 号</div><div class="mock-btn">加载视频 ↗</div></div></div>
+      <div class="mock-work">
+        <div><div class="mock-label">02 / 选择片段 · 00:12</div><div class="mock-video"></div><div class="mock-filmstrip"></div><div class="mock-track"></div><div class="mock-times"><span>00:02.4</span><span>00:07.8</span></div></div>
+        <div class="mock-controls"><div class="mock-field">输出宽度<b>480 px</b></div><div class="mock-field">播放速度<b>1×</b></div><div class="mock-field">帧率<b>12 FPS</b></div></div>
+        <div class="mock-export"><span>03 / 导出 GIF</span><span class="mock-btn">生成 GIF ↗</span></div>
+      </div>
+    </div>
+    <div class="layout-copy"><h3>A — 纵向编辑长页 · 推荐</h3><p>最接近 Atelier 的画廊叙事：标题与来源在前，宽幅视频居中成为主视觉，时间轴与参数依次展开。顺序自然，窄屏适配简单。</p></div>
+  </article>
+
+  <article class="layout-card" data-choice="split-workbench" onclick="toggleSelect(this)">
+    <div class="layout-mock">
+      <div class="mock-top"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="mock-hero">Frame by<br><em>frame.</em></div>
+      <div class="mock-caption">02 / 编辑片段</div>
+      <div class="mock-work mock-side">
+        <div><div class="mock-video"></div><div class="mock-filmstrip"></div><div class="mock-track"></div><div class="mock-times"><span>00:02.4</span><span>00:07.8</span></div></div>
+        <div class="mock-aside"><div class="mock-label">导出设置</div><div class="mock-controls"><div class="mock-field">宽度<b>480 px</b></div><div class="mock-field">速度<b>1×</b></div><div class="mock-field">FPS<b>12</b></div></div><div class="mock-btn" style="display:inline-block;margin-top:9px">生成 GIF ↗</div></div>
+        <div class="mock-source"><div class="mock-label">01 / 视频来源</div><div class="mock-inputrow"><div class="mock-input">粘贴视频链接</div><div class="mock-btn">加载 ↗</div></div></div>
+      </div>
+    </div>
+    <div class="layout-copy"><h3>B — 固定双栏工作台</h3><p>视频与导出参数并排，减少纵向滚动；像专业工具。但标题、来源、视频及参数会争夺横向空间，窄屏变化也更多。</p></div>
+  </article>
+
+  <article class="layout-card" data-choice="gallery-canvas" onclick="toggleSelect(this)">
+    <div class="layout-mock">
+      <div class="mock-top"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="mock-hero">A moment,<br><em>in motion.</em></div>
+      <div class="mock-caption">把视频里值得留下的一刻，做成 GIF。</div>
+      <div class="mock-video" style="height:140px;margin-top:14px"></div>
+      <div class="mock-track"></div><div class="mock-times"><span>00:02.4</span><span>00:07.8</span></div>
+      <div class="mock-source"><div class="mock-label">视频来源</div><div class="mock-inputrow"><div class="mock-input">粘贴 B 站链接或 BV 号</div><div class="mock-btn">加载 ↗</div></div></div>
+      <div class="mock-controls"><div class="mock-field">宽度<b>480 px</b></div><div class="mock-field">速度<b>1×</b></div><div class="mock-field">帧率<b>12 FPS</b></div></div>
+      <div class="mock-export"><span>裁切 · 颜色 · 抖动</span><span class="mock-btn">生成 GIF ↗</span></div>
+    </div>
+    <div class="layout-copy"><h3>C — 画廊画布优先</h3><p>视频预览在页面最前，像一件展品；来源与编辑工具在其下方。但尚未加载视频时画面留空，产品入口不如前两种直接。</p></div>
+  </article>
+</div>
+<p class="subtitle" style="margin-top:15px">点击卡片选择布局。A 方向既定的配色、字体和动效在三种结构中都会保留。</p>

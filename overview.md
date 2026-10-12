@@ -296,11 +296,18 @@ app/
    - 成功后显示 GIF 预览和“下载 GIF”按钮
    - 失败时显示中文错误原因，不要只报 500
 
-7. **下载导出**
+7. **视觉呈现与无障碍**
+   - 采用暖纸白、深墨色和克制的苔橄榄绿，使用留白、细分隔线和轻边框，避免深色渐变、光晕和厚重卡片。
+   - 中文编辑式衬线标题与无衬线正文/控件均使用本机字体回退；不加载远程字体或动效库。
+   - 页面纵向排列来源、视频/选段、导出和结果；中小屏幕保持内容顺序并收拢为单列，不得产生横向溢出。
+   - 首屏和编辑器仅轻柔入场，每次生成结果短暂淡入；按钮悬停反馈克制。裁切框和时间轴拖动不得受动画影响。
+   - 支持 `prefers-reduced-motion: reduce`：关闭入场、结果和悬停位移动效，并避免结果平滑滚动；保留可见焦点和键盘操作。
+
+8. **下载导出**
    - `GET /api/tasks/{task_id}/gif` 返回 GIF 预览
    - `GET /api/tasks/{task_id}/download` 下载文件，文件名如 `clipgif-{platform}-{task_id}.gif`
 
-8. **错误处理**
+9. **错误处理**
    - 非法输入、无效链接、时间段错误、视频不存在、需要登录、ffmpeg 失败、超时，都要有友好提示
    - 区分平台错误：例如“B站视频需要登录，请提供 cookies.txt”
    - 后端不能因为单个任务崩溃
@@ -535,24 +542,27 @@ clipgif/
 15. 启用“裁切”并调整裁切框后，GIF 只保留所选画幅；重置后恢复完整画面，不承诺修复框内图像内容。
 16. 所有 subprocess 无 `shell=True`，命令注入测试无效。
 17. `README.md` 和 `SKILL.md` 存在，且小白能按步骤启动。
+18. 首页使用暖纸白/深墨色/苔橄榄绿的编辑式视觉风格，且没有横向溢出。
+19. 在 `prefers-reduced-motion: reduce` 下，首屏、编辑器、结果、按钮和结果滚动均无非必要动效。
+20. 启用动效时，裁切框缩放/移动与时间轴滑块拖动仍即时响应。
 
 ### 多平台（视频平台）预留验收
-18. 存在 `PlatformAdapter` 抽象接口和 `platform_registry`。
-19. 核心下载、预览、转 GIF 流程中没有散落的 B站硬编码判断。
-20. `GET /api/platforms` 返回当前支持平台列表。
-21. 预览和任务状态中包含 `platform` 字段。
-22. 编写一个测试用的假平台适配器，例如 `FakeAdapter`，验证注册表自动发现、`detect_platform` 识别、核心流程无需改核心代码即可调用。
-23. `docs/adding-a-platform.md` 存在，贡献者按文档能新增视频平台适配器。
-24. README 中明确说明：当前完整支持 B站，未来欢迎贡献其他平台适配器。
-25. 未实现平台输入时，网页提示“暂不支持该平台，当前支持：B站”，而不是 500。
+21. 存在 `PlatformAdapter` 抽象接口和 `platform_registry`。
+22. 核心下载、预览、转 GIF 流程中没有散落的 B站硬编码判断。
+23. `GET /api/platforms` 返回当前支持平台列表。
+24. 预览和任务状态中包含 `platform` 字段。
+25. 编写一个测试用的假平台适配器，例如 `FakeAdapter`，验证注册表自动发现、`detect_platform` 识别、核心流程无需改核心代码即可调用。
+26. `docs/adding-a-platform.md` 存在，贡献者按文档能新增视频平台适配器。
+27. README 中明确说明：当前完整支持 B站，未来欢迎贡献其他平台适配器。
+28. 未实现平台输入时，网页提示“暂不支持该平台，当前支持：B站”，而不是 500。
 
 ### 操作系统平台预留验收
-26. Windows 下双击 `start_windows.bat` 能启动服务并打开网页。
-27. 核心代码中不出现硬编码 Windows 路径。
-28. `app/services/deps.py` 存在，缺 ffmpeg 时给出分平台安装提示。
-29. `docs/platform-support.md` 存在，含支持矩阵和贡献指引。
-30. CI 中 Windows job 必须通过，macOS/Linux job 存在且 `continue-on-error: true`。
-31. `scripts/start_macos.sh` 和 `scripts/start_linux.sh` 存在（可占位），README 标注为实验性。
+29. Windows 下双击 `start_windows.bat` 能启动服务并打开网页。
+30. 核心代码中不出现硬编码 Windows 路径。
+31. `app/services/deps.py` 存在，缺 ffmpeg 时给出分平台安装提示。
+32. `docs/platform-support.md` 存在，含支持矩阵和贡献指引。
+33. CI 中 Windows job 必须通过，macOS/Linux job 存在且 `continue-on-error: true`。
+34. `scripts/start_macos.sh` 和 `scripts/start_linux.sh` 存在（可占位），README 标注为实验性。
 
 ### 最终回复必须包含
 - 项目实际路径

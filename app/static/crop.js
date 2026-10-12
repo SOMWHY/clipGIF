@@ -86,7 +86,6 @@
       overlay.hidden = !enabled || !region || bounds.width <= 0 || bounds.height <= 0;
       toggle.textContent = enabled ? "关闭裁切" : "启用裁切";
       toggle.setAttribute("aria-pressed", String(enabled));
-      reset.disabled = !enabled;
       if (overlay.hidden) return;
       box.style.left = `${region.x * 100}%`;
       box.style.top = `${region.y * 100}%`;

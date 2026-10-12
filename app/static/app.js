@@ -26,6 +26,40 @@
 
   let previewId = null;
   let previewLoop = false;
+  let editorHasEntered = false;
+
+  function prefersReducedMotion() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function clearEditorEntrance(event) {
+    if (event.target === editor) editor.classList.remove("editor-entering");
+  }
+
+  function clearResultEntrance(event) {
+    if (event.target === resultPanel) resultPanel.classList.remove("result-entering");
+  }
+
+  editor.addEventListener("animationend", clearEditorEntrance);
+  editor.addEventListener("animationcancel", clearEditorEntrance);
+  resultPanel.addEventListener("animationend", clearResultEntrance);
+  resultPanel.addEventListener("animationcancel", clearResultEntrance);
+
+  function revealEditor() {
+    if (!editorHasEntered) {
+      editorHasEntered = true;
+      if (!prefersReducedMotion()) editor.classList.add("editor-entering");
+    }
+    editor.hidden = false;
+  }
+
+  function revealResult() {
+    resultPanel.hidden = false;
+    resultPanel.classList.remove("result-entering");
+    if (!prefersReducedMotion()) {
+      window.requestAnimationFrame(() => resultPanel.classList.add("result-entering"));
+    }
+  }
 
   function showNotice(message, isError = false) {
     notice.textContent = message;
@@ -101,7 +135,7 @@
       video.load();
       const values = timeline.setDuration(ready.duration);
       $("#durationBadge").textContent = `总时长 ${window.ClipGifTimeline.formatTime(ready.duration)}`;
-      editor.hidden = false;
+      revealEditor();
       resultPanel.hidden = true;
       showNotice("视频预览已就绪。可以拖动时间轴选取片段。");
       if (values.end - values.start > 60) timeline.update("end");
@@ -195,9 +229,12 @@
       const result = await waitForTask(task.task_id);
       $("#gifPreview").src = `${result.gif_url}?v=${Date.now()}`;
       $("#downloadButton").href = result.download_url;
-      resultPanel.hidden = false;
+      revealResult();
       showNotice("GIF 已生成，可以预览并下载。");
-      resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      resultPanel.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+        block: "start",
+      });
     } catch (error) {
       showNotice(error.message || "GIF 生成失败。", true);
     } finally {

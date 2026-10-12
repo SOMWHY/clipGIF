@@ -10,6 +10,7 @@ ClipGIF 是一个在你自己电脑上运行的本地网页应用：浏览器提
 - 未来计划欢迎贡献 YouTube、Vimeo、X/Twitter 及更多 yt-dlp 支持平台。
 - 操作系统：Windows 10/11 完整支持；macOS 和 Linux 脚本目前为实验性占位实现；Docker 尚未实现。
 - GIF 导出支持画幅裁切、自定义尺寸、倍速和画质参数；可选的 filmstrip 时间轴缩略图尚未实现。
+- 界面采用暖纸白、墨色与苔橄榄绿的编辑式画廊风格，适配窄屏，并支持系统“减少动态效果”偏好。
 
 欢迎贡献其他 yt-dlp 支持平台。参见[新增视频平台指南](docs/adding-a-platform.md)和[操作系统支持矩阵](docs/platform-support.md)。
 
@@ -65,6 +66,12 @@ python -m app.main
 
 浏览器视频播放器通过 HTTP Range 支持拖动 seek；预览视频由 ffmpeg 输出为 H.264/AAC MP4，并带有 fast-start 元数据。
 
+## 界面与动效
+
+ClipGIF 使用暖纸白背景、深墨色正文和克制的苔橄榄绿强调色。中文标题使用本机可用的衬线字体回退，表单、标签和操作控件使用无衬线字体；应用不依赖远程字体或前端动效库。页面按“来源 → 视频与选段 → 导出 → 结果”的顺序纵向排列，窄屏会收拢为单列。
+
+首次打开时，标题和来源区域轻柔淡入；首次加载编辑器及每次生成 GIF 时会有短暂淡入，按钮仅有轻微悬停反馈。裁切框和时间轴拖动保持即时。若操作系统或浏览器启用了“减少动态效果”（`prefers-reduced-motion: reduce`），页面入场和结果动画、按钮位移动效及结果平滑滚动都会关闭。
+
 ## 导出 cookies.txt
 
 只有视频需要登录时才需要 cookie。使用你信任的浏览器扩展导出当前浏览器会话的 Netscape 格式 `cookies.txt`，确认扩展生成的是文本格式，然后在 ClipGIF 加载视频时选择该文件。Cookie 等同于登录凭据：不要分享或提交到代码仓库。ClipGIF 将上传内容暂存到当前任务目录供 yt-dlp 使用，并在下载流程结束时清理。
@@ -91,5 +98,7 @@ node --test tests\test_timeline.js tests\test_crop.js
 ```
 
 时间轴单测需要 Node.js 20+；这不是运行 ClipGIF 网页应用的依赖。
+
+界面样式或交互调整后，建议在桌面和窄屏检查来源表单、视频编辑器、导出与结果状态，并验证裁切拖动和系统减少动态效果设置。
 
 平台扩展方式见[新增视频平台指南](docs/adding-a-platform.md)；操作系统贡献方式见[支持矩阵](docs/platform-support.md)。

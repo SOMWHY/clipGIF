@@ -1,0 +1,79 @@
+<h2>动效的克制度</h2>
+<p class="subtitle">方向 A 已确定：中文主文案、少量英文眉题，采用 Atelier 式暖纸白与画廊编辑感。下面比较动效分寸，功能操作不因动效延迟。</p>
+
+<style>
+  .motion-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:15px; }
+  .motion-card { border:2px solid var(--border); border-radius:10px; overflow:hidden; cursor:pointer; background:var(--bg-secondary); transition:border-color .2s,transform .2s; }
+  .motion-card:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .motion-card.selected { border-color:var(--selected-border); }
+  .motion-preview { height:220px; padding:16px; color:#24231f; font-family:Arial,sans-serif; }
+  .paper-a { background:#f5f2e9; }
+  .paper-b { background:#f7f5ef; }
+  .paper-c { background:#f8f7f2; }
+  .mini-head { display:flex; justify-content:space-between; border-bottom:1px solid #cfcbbf; padding-bottom:8px; font-size:9px; letter-spacing:.06em; }
+  .mini-head b { letter-spacing:-.04em; }
+  .mini-heading { margin-top:20px; font:32px/1.02 Georgia,serif; letter-spacing:-.04em; }
+  .mini-heading i { display:block; color:#83826d; font-weight:400; }
+  .mini-copy { margin-top:7px; font-size:9px; color:#727168; }
+  .mini-canvas { position:relative; margin-top:15px; height:76px; overflow:hidden; background:linear-gradient(120deg,#e5e0d2,#c2c9bc 44%,#f1eee5); }
+  .mini-canvas:after { content:""; position:absolute; right:12%; top:14%; width:27%; height:72%; background:linear-gradient(145deg,#324b49,#c49a6e 55%,#657365); }
+  .mini-line { margin-top:11px; height:3px; background:linear-gradient(90deg,#59694f 0 42%,#d7d3c7 42%); }
+  .mini-controls { display:flex; justify-content:space-between; margin-top:7px; font-size:8px; color:#737167; }
+  .mini-action { display:inline-block; margin-top:12px; padding:8px 12px; background:#354438; color:white; font-size:9px; }
+  .paper-a .mini-heading { animation:arrive .65s cubic-bezier(.2,.7,.2,1) both; }
+  .paper-a .mini-canvas { animation:soft-reveal .9s .15s ease both; }
+  .paper-a .mini-action { transition:transform .18s,background .18s; }
+  .paper-a .mini-action:hover { transform:translateY(-2px); background:#53674c; }
+  .paper-b .mini-heading { animation:arrive .45s ease both; }
+  .paper-b .mini-canvas { animation:soft-reveal .6s .08s ease both; }
+  .paper-b .mini-action { transition:transform .16s; }
+  .paper-b .mini-action:hover { transform:translateY(-1px); }
+  .paper-c .mini-heading { }
+  .paper-c .mini-canvas { }
+  .paper-c .mini-action { transition:background .15s; }
+  .paper-c .mini-action:hover { background:#53674c; }
+  @keyframes arrive { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes soft-reveal { from { opacity:.35; clip-path:inset(0 0 0 8%); } to { opacity:1; clip-path:inset(0); } }
+  .motion-copy { padding:14px 16px 16px; }
+  .motion-copy h3 { margin:0 0 5px; font-size:14px; }
+  .motion-copy p { margin:0; color:var(--text-secondary); font-size:11px; line-height:1.5; }
+  .motion-note { margin-top:14px; color:var(--text-secondary); font-size:12px; }
+  @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; scroll-behavior:auto!important; transition-duration:.01ms!important; } }
+</style>
+
+<div class="motion-options">
+  <article class="motion-card" data-choice="gallery" onclick="toggleSelect(this)">
+    <div class="motion-preview paper-a">
+      <div class="mini-head"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="mini-heading">留住这一刻。<i>让它继续动。</i></div>
+      <div class="mini-copy">A small moving image, made on your device.</div>
+      <div class="mini-canvas"></div><div class="mini-line"></div>
+      <div class="mini-controls"><span>00:02.4</span><span>00:07.8</span></div>
+      <div class="mini-action">生成 GIF ↗</div>
+    </div>
+    <div class="motion-copy"><h3>A — 画廊式轻入场 · 推荐</h3><p>首次打开时，标题与视频区轻微淡入上移；生成结果出现时做一次短淡入。按钮 hover 微移 1–2px，控件焦点/选择有柔和颜色反馈，不循环、不自动播放。</p></div>
+  </article>
+  <article class="motion-card" data-choice="micro" onclick="toggleSelect(this)">
+    <div class="motion-preview paper-b">
+      <div class="mini-head"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="mini-heading">留住这一刻。<i>让它继续动。</i></div>
+      <div class="mini-copy">A small moving image, made on your device.</div>
+      <div class="mini-canvas"></div><div class="mini-line"></div>
+      <div class="mini-controls"><span>00:02.4</span><span>00:07.8</span></div>
+      <div class="mini-action">生成 GIF ↗</div>
+    </div>
+    <div class="motion-copy"><h3>B — 仅交互微动</h3><p>页面不做入场动画；只对按钮 hover、时间轴拖动、裁切框缩放和成功/错误状态做短促反馈。最克制、响应最直接。</p></div>
+  </article>
+  <article class="motion-card" data-choice="editorial" onclick="toggleSelect(this)">
+    <div class="motion-preview paper-c">
+      <div class="mini-head"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="mini-heading">留住这一刻。<i>让它继续动。</i></div>
+      <div class="mini-copy">A small moving image, made on your device.</div>
+      <div class="mini-canvas"></div><div class="mini-line"></div>
+      <div class="mini-controls"><span>00:02.4</span><span>00:07.8</span></div>
+      <div class="mini-action">生成 GIF ↗</div>
+    </div>
+    <div class="motion-copy"><h3>C — 静态优先</h3><p>除必要的按钮与焦点反馈外基本静止；更适合偏好无动画、追求低干扰的使用体验。</p></div>
+  </article>
+</div>
+<p class="motion-note">所有方案都尊重系统“减少动态效果”设置；视频本身只在用户播放/预览选区时动效播放。</p>

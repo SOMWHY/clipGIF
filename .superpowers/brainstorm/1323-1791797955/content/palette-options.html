@@ -1,0 +1,80 @@
+<h2>最后确认色彩与标题气质</h2>
+<p class="subtitle">已选定：Meridian Editorial、中文主文案 + 少量英文眉题、纵向编辑长页与轻柔入场动效。这里比较最后的色彩/字体细节。</p>
+
+<style>
+  .palette-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:15px; }
+  .palette-card { overflow:hidden; border:2px solid var(--border); border-radius:10px; background:var(--bg-secondary); cursor:pointer; transition:border-color .18s,transform .18s; }
+  .palette-card:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .palette-card.selected { border-color:var(--selected-border); }
+  .palette-art { min-height:310px; padding:15px; font-family:Arial,sans-serif; }
+  .palette-a .palette-art { background:#f5f2e9; color:#26251f; }
+  .palette-b .palette-art { background:#fbf7ef; color:#29251f; }
+  .palette-c .palette-art { background:#f4f4ef; color:#232722; }
+  .palette-nav { display:flex; justify-content:space-between; align-items:center; padding-bottom:8px; border-bottom:1px solid currentColor; font-size:8px; }
+  .palette-nav b { font-size:11px; letter-spacing:-.04em; }
+  .palette-title { margin-top:19px; font-size:28px; line-height:1.02; letter-spacing:-.06em; }
+  .palette-a .palette-title { font-family:Georgia,"Noto Serif CJK SC",serif; font-weight:400; }
+  .palette-b .palette-title { font-family:Georgia,"Noto Serif CJK SC",serif; font-weight:400; }
+  .palette-c .palette-title { font-family:"Segoe UI",Arial,sans-serif; font-weight:350; letter-spacing:-.055em; }
+  .palette-title span { display:block; }
+  .palette-a .palette-title span { color:#7c8068; }
+  .palette-b .palette-title span { color:#a56043; }
+  .palette-c .palette-title span { color:#547265; }
+  .palette-caption { margin-top:6px; font-size:8px; opacity:.65; letter-spacing:.04em; }
+  .palette-image { position:relative; margin-top:14px; height:78px; background:linear-gradient(125deg,#becbbd 0 27%,#e8e3d3 27% 52%,#bdc5ba 52% 72%,#8b967e 72%); }
+  .palette-image:after { content:""; position:absolute; right:12%; top:14%; width:25%; height:72%; background:linear-gradient(145deg,#324b49,#c49a6e 55%,#657365); }
+  .palette-controls { display:flex; align-items:center; gap:9px; margin-top:11px; font-size:8px; }
+  .palette-track { height:3px; flex:1; background:linear-gradient(90deg,#c9c4b8 0 20%,currentColor 20% 63%,#c9c4b8 63%); }
+  .palette-row { display:flex; gap:6px; margin-top:11px; }
+  .palette-field { flex:1; padding:7px; border:1px solid currentColor; font-size:7px; }
+  .palette-button { margin-top:10px; padding:7px 11px; font-size:8px; }
+  .palette-a .palette-button { border:1px solid #46503d; background:#46503d; color:#fbf8ef; }
+  .palette-b .palette-button { border:1px solid #a56043; background:#a56043; color:#fffaf2; }
+  .palette-c .palette-button { border:1px solid #547265; background:#547265; color:#f8f7f0; }
+  .palette-a .palette-field { background:#faf8f1; border-color:#d5d0c4; }
+  .palette-b .palette-field { background:#fffdf7; border-color:#e0d5c8; }
+  .palette-c .palette-field { background:#fbfbf7; border-color:#d4d8cf; }
+  .palette-description { padding:13px 15px 15px; }
+  .palette-description h3 { margin:0 0 5px; font-size:14px; }
+  .palette-description p { margin:0; color:var(--text-secondary); font-size:11px; line-height:1.5; }
+</style>
+
+<div class="palette-grid">
+  <article class="palette-card palette-a" data-choice="olive-serif" onclick="toggleSelect(this)">
+    <div class="palette-art">
+      <div class="palette-nav"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="palette-title">留住这一刻。<span>让它继续动。</span></div>
+      <div class="palette-caption">A SMALL MOVING IMAGE, MADE ON YOUR DEVICE.</div>
+      <div class="palette-image"></div>
+      <div class="palette-controls"><span>00:02.4</span><div class="palette-track"></div><span>00:07.8</span></div>
+      <div class="palette-row"><div class="palette-field">输出宽度 · 480 px</div><div class="palette-field">速度 · 1×</div></div>
+      <div class="palette-button">生成 GIF ↗</div>
+    </div>
+    <div class="palette-description"><h3>A — 苔橄榄 + 衬线标题 · 推荐</h3><p>最接近参考图的画廊/艺术出版物气质：纸白、灰橄榄绿、深墨色；标题用中文衬线回退，控件仍用现代无衬线字。</p></div>
+  </article>
+  <article class="palette-card palette-b" data-choice="clay-serif" onclick="toggleSelect(this)">
+    <div class="palette-art">
+      <div class="palette-nav"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="palette-title">留住这一刻。<span>让它继续动。</span></div>
+      <div class="palette-caption">A SMALL MOVING IMAGE, MADE ON YOUR DEVICE.</div>
+      <div class="palette-image"></div>
+      <div class="palette-controls"><span>00:02.4</span><div class="palette-track"></div><span>00:07.8</span></div>
+      <div class="palette-row"><div class="palette-field">输出宽度 · 480 px</div><div class="palette-field">速度 · 1×</div></div>
+      <div class="palette-button">生成 GIF ↗</div>
+    </div>
+    <div class="palette-description"><h3>B — 暖陶土 + 衬线标题</h3><p>保持温暖，但用低饱和陶土色替代橄榄绿作为按钮与强调色；更有手作、印刷品感，个性更鲜明。</p></div>
+  </article>
+  <article class="palette-card palette-c" data-choice="sage-sans" onclick="toggleSelect(this)">
+    <div class="palette-art">
+      <div class="palette-nav"><b>ClipGIF</b><span>LOCAL / PRIVATE</span></div>
+      <div class="palette-title">留住这一刻。<span>让它继续动。</span></div>
+      <div class="palette-caption">A SMALL MOVING IMAGE, MADE ON YOUR DEVICE.</div>
+      <div class="palette-image"></div>
+      <div class="palette-controls"><span>00:02.4</span><div class="palette-track"></div><span>00:07.8</span></div>
+      <div class="palette-row"><div class="palette-field">输出宽度 · 480 px</div><div class="palette-field">速度 · 1×</div></div>
+      <div class="palette-button">生成 GIF ↗</div>
+    </div>
+    <div class="palette-description"><h3>C — 鼠尾草绿 + 轻无衬线标题</h3><p>更轻盈、当代与中性：冷一点的绿灰色和无衬线大标题。可读性直观，但少一些 Atelier 的文学与艺术编辑气息。</p></div>
+  </article>
+</div>
+<p class="subtitle" style="margin-top:15px">点击卡片选择。也可回复色彩方案，并说明中文标题是否采用衬线风格。</p>

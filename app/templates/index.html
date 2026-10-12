@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111722">
+  <meta name="theme-color" content="#f4f1e8">
   <title>ClipGIF · 本地视频剪辑器</title>
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=2026-10-editorial-3">
   <script src="/static/timeline.js" defer></script>
   <script src="/static/crop.js" defer></script>
-  <script src="/static/app.js" defer></script>
+  <script src="/static/app.js?v=2026-10-editorial" defer></script>
 </head>
 <body>
   <div class="page-shell">
@@ -22,13 +22,13 @@
     </header>
 
     <main>
-      <section class="intro">
-        <p class="eyebrow">LOCAL VIDEO WORKBENCH</p>
-        <h1>把精彩片段，<span>剪成 GIF。</span></h1>
-        <p class="intro-copy">粘贴视频链接，拖动时间轴选中片段。视频在你的电脑上处理。</p>
+      <section class="intro entrance-on-load">
+        <p class="eyebrow">A LOCAL VIDEO WORKSPACE</p>
+        <h1>把喜欢的片段，<span>剪成 GIF。</span></h1>
+        <p class="intro-copy">从视频中选取一段，调整画幅与导出参数。视频仅在本机处理。</p>
       </section>
 
-      <section class="panel source-panel" aria-labelledby="source-heading">
+      <section class="panel source-panel entrance-on-load" aria-labelledby="source-heading">
         <div class="section-heading">
           <div>
             <p class="step-label">01 / SOURCE</p>
@@ -46,11 +46,11 @@
             </button>
           </div>
           <div class="upload-row">
+            <input id="cookieFile" name="cookies" type="file" accept=".txt,text/plain">
             <label class="file-label" for="cookieFile">
               <span class="upload-icon" aria-hidden="true">＋</span>
               <span id="cookieLabel">上传 cookies.txt（可选）</span>
             </label>
-            <input id="cookieFile" name="cookies" type="file" accept=".txt,text/plain">
             <p>仅在需要登录时使用；文件仅供本次下载，完成后删除。</p>
           </div>
         </form>
@@ -78,7 +78,7 @@
         </div>
         <div class="crop-actions">
           <button id="cropToggle" class="button button-secondary" type="button" aria-pressed="false">启用裁切</button>
-          <button id="cropReset" class="button button-quiet" type="button" disabled>重置画幅</button>
+          <button id="cropReset" class="button button-quiet" type="button">重置画幅</button>
           <span>拖动选框移动，拖动四角调整大小</span>
         </div>
 
