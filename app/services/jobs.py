@@ -86,12 +86,21 @@ class JobManager:
         try:
             if preview.source_path is None:
                 raise ClipGifError("找不到原始视频，请重新加载。")
+            if preview.width is None or preview.height is None:
+                raise ClipGifError("预览缺少视频尺寸信息，请重新加载视频。")
             output_path = OUTPUTS_DIR / f"{job.task_id}.gif"
 
             def set_stage(stage: str) -> None:
                 job.status = TaskStatus.CLIPPING if stage == "clipping" else TaskStatus.TRANSCODING
 
-            make_gif(preview.source_path, output_path, request.start, request.end, set_stage)
+            make_gif(
+                preview.source_path,
+                output_path,
+                request,
+                preview.width,
+                preview.height,
+                set_stage,
+            )
             job.gif_path = output_path
             job.status = TaskStatus.SUCCESS
         except ClipGifError as exc:

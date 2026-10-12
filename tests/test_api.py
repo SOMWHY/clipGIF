@@ -78,9 +78,11 @@ def test_gif_job_success_and_download(monkeypatch, client, tmp_path):
         status=PreviewStatus.READY,
         source_path=source,
         duration=20,
+        width=640,
+        height=360,
     )
 
-    def fake_make_gif(_source, target, _start, _end, on_stage):
+    def fake_make_gif(_source, target, _request, _frame_width, _frame_height, on_stage):
         on_stage("clipping")
         on_stage("transcoding")
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -101,6 +103,36 @@ def test_gif_job_success_and_download(monkeypatch, client, tmp_path):
     download = client.get(result["download_url"])
     assert download.content == b"gif"
     assert f"clipgif-bilibili-{task['task_id']}.gif" in download.headers["content-disposition"]
+
+
+def test_gif_job_fails_when_preview_dimensions_are_missing(monkeypatch, client, tmp_path):
+    manager = main.app.state.jobs
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"source")
+    preview_id = "c" * 32
+    manager.previews[preview_id] = PreviewJob(
+        preview_id=preview_id,
+        platform="bilibili",
+        adapter=detect_platform("BV1xx411c7mD"),
+        status=PreviewStatus.READY,
+        source_path=source,
+        duration=20,
+    )
+    called = False
+
+    def fake_make_gif(*_args, **_kwargs):
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr(jobs, "make_gif", fake_make_gif)
+    task = client.post(
+        f"/api/previews/{preview_id}/gif",
+        json={"start": 0, "end": 3},
+    ).json()
+    result = _wait_for_status(client, f"/api/tasks/{task['task_id']}", {"success", "failed"})
+    assert result["status"] == "failed"
+    assert "尺寸" in result["error"]
+    assert called is False
 
 
 def test_gif_request_outside_source_duration_is_rejected(client, tmp_path):
