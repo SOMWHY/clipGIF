@@ -178,6 +178,82 @@ def test_build_video_filter_applies_crop_speed_fps_and_exact_canvas():
     assert "pad=640:480" in filters
 
 
+def test_width_only_export_accepts_derived_height_above_1280():
+    request = GifRequest(
+        start=0,
+        end=3,
+        crop={"x": 0, "y": 0, "width": 0.375, "height": 0.75},
+        width=1280,
+    )
+    filters = gif_maker._scale_and_pad_filters(request, 640, 480)
+    assert filters == ["scale=w=1280:h=-2:flags=lanczos"]
+
+
+def test_height_only_export_accepts_derived_width_above_1280():
+    request = GifRequest(
+        start=0,
+        end=3,
+        crop={"x": 0, "y": 0, "width": 0.75, "height": 0.375},
+        height=1280,
+    )
+    filters = gif_maker._scale_and_pad_filters(request, 640, 480)
+    assert filters == ["scale=w=-2:h=1280:flags=lanczos"]
+
+
+def test_one_sided_export_accepts_derived_dimension_of_4096():
+    request = GifRequest(
+        start=0,
+        end=3,
+        crop={"x": 0, "y": 0, "width": 0.234375, "height": 1},
+        width=1280,
+    )
+    filters = gif_maker._scale_and_pad_filters(request, 640, 480)
+    assert filters == ["scale=w=1280:h=-2:flags=lanczos"]
+
+
+def test_width_only_export_rejects_derived_height_above_4096():
+    request = GifRequest(
+        start=0,
+        end=3,
+        crop={"x": 0, "y": 0, "width": 0.2, "height": 1},
+        width=1280,
+    )
+    with pytest.raises(ClipGifError, match="4096"):
+        gif_maker._scale_and_pad_filters(request, 640, 480)
+
+
+def test_height_only_export_rejects_derived_width_above_4096():
+    request = GifRequest(
+        start=0,
+        end=3,
+        crop={"x": 0, "y": 0, "width": 1, "height": 0.2},
+        height=1280,
+    )
+    with pytest.raises(ClipGifError, match="4096"):
+        gif_maker._scale_and_pad_filters(request, 640, 480)
+
+
+def test_one_sided_export_rejects_derived_dimension_below_one():
+    request = GifRequest(start=0, end=3, width=64)
+    with pytest.raises(ClipGifError, match="最小可处理范围"):
+        gif_maker._scale_and_pad_filters(request, 96000, 480)
+
+
+def test_default_export_scaling_is_unchanged():
+    request = GifRequest(start=0, end=3)
+    assert gif_maker._scale_and_pad_filters(request, 640, 360) == [
+        r"scale=w=min(480\,iw):h=-2:flags=lanczos"
+    ]
+
+
+def test_fixed_canvas_scaling_is_unchanged():
+    request = GifRequest(start=0, end=3, width=640, height=480)
+    assert gif_maker._scale_and_pad_filters(request, 1280, 720) == [
+        "scale=w=640:h=480:force_original_aspect_ratio=decrease:flags=lanczos",
+        "pad=640:480:(ow-iw)/2:(oh-ih)/2:color=black",
+    ]
+
+
 def test_crop_filter_keeps_bottom_right_region_inside_odd_frame():
     crop = CropRegion(x=0.5, y=0.5, width=0.5, height=0.5)
     result = gif_maker._crop_filter(crop, 1279, 719)

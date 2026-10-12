@@ -10,6 +10,9 @@ from app.models import CropRegion, GifRequest
 from app.services.errors import ClipGifError
 
 
+MAX_DERIVED_GIF_DIMENSION = 4096
+
+
 def _tool_path() -> str:
     executable = shutil.which("ffmpeg")
     if executable is None:
@@ -62,14 +65,18 @@ def _scale_and_pad_filters(
 
     if request.width is not None:
         derived_height = round(request.width / aspect_ratio)
-        if derived_height < 1 or derived_height > 1280:
-            raise ClipGifError("裁切后的 GIF 高度超出可处理范围（1–1280 像素）。")
+        if derived_height < 1:
+            raise ClipGifError("裁切后的 GIF 尺寸低于最小可处理范围。")
+        if derived_height > MAX_DERIVED_GIF_DIMENSION:
+            raise ClipGifError("按宽度推算的 GIF 高度超过 4096 像素安全上限。")
         return [f"scale=w={request.width}:h=-2:flags=lanczos"]
 
     assert request.height is not None
     derived_width = round(request.height * aspect_ratio)
-    if derived_width < 1 or derived_width > 1280:
-        raise ClipGifError("裁切后的 GIF 宽度超出可处理范围（1–1280 像素）。")
+    if derived_width < 1:
+        raise ClipGifError("裁切后的 GIF 尺寸低于最小可处理范围。")
+    if derived_width > MAX_DERIVED_GIF_DIMENSION:
+        raise ClipGifError("按高度推算的 GIF 宽度超过 4096 像素安全上限。")
     return [f"scale=w=-2:h={request.height}:flags=lanczos"]
 
 
