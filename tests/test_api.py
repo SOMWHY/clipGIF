@@ -135,6 +135,63 @@ def test_gif_job_fails_when_preview_dimensions_are_missing(monkeypatch, client, 
     assert called is False
 
 
+def test_advanced_gif_options_are_forwarded_to_gif_job(monkeypatch, client, tmp_path):
+    manager = main.app.state.jobs
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"source")
+    preview_id = "d" * 32
+    manager.previews[preview_id] = PreviewJob(
+        preview_id=preview_id,
+        platform="bilibili",
+        adapter=detect_platform("BV1xx411c7mD"),
+        status=PreviewStatus.READY,
+        source_path=source,
+        duration=20,
+        width=640,
+        height=360,
+    )
+    received = []
+
+    def fake_make_gif(_source, target, request, _frame_width, _frame_height, _on_stage):
+        received.append(request)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(b"gif")
+        return target
+
+    monkeypatch.setattr(jobs, "make_gif", fake_make_gif)
+    response = client.post(
+        f"/api/previews/{preview_id}/gif",
+        json={
+            "start": 0,
+            "end": 3,
+            "crop": {"x": 0.25, "y": 0.25, "width": 0.5, "height": 0.5},
+            "width": 640,
+            "height": 480,
+            "fps": 20,
+            "speed": 2,
+            "max_colors": 256,
+            "dither": "bayer",
+        },
+    )
+    assert response.status_code == 200
+    task = response.json()
+    result = _wait_for_status(
+        client, f"/api/tasks/{task['task_id']}", {"success", "failed"}
+    )
+    assert result["status"] == "success"
+    request = received[0]
+    assert request.crop.x == 0.25
+    assert request.crop.y == 0.25
+    assert request.crop.width == 0.5
+    assert request.crop.height == 0.5
+    assert request.width == 640
+    assert request.height == 480
+    assert request.fps == 20
+    assert request.speed == 2
+    assert request.max_colors == 256
+    assert request.dither == "bayer"
+
+
 def test_gif_request_outside_source_duration_is_rejected(client, tmp_path):
     manager = main.app.state.jobs
     source = tmp_path / "source.mp4"

@@ -88,6 +88,13 @@ label { display: block; margin-bottom: 9px; color: #d2d9df; font-size: 12px; fon
 .timeline-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 19px; }
 .button-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .keyboard-hint { color: #7f8d9b; font-size: 10px; }
+.export-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px 12px; margin-top: 25px; padding: 18px; border: 1px solid #2b3543; border-radius: 10px; background: #121922; }
+.export-option { min-width: 0; }
+.export-option label { margin-bottom: 7px; }
+.export-option select, .export-option input { width: 100%; min-width: 0; height: 39px; padding: 0 10px; border: 1px solid #394553; border-radius: 7px; outline: 0; background: #0e141c; color: var(--text); font-size: 11px; }
+.export-option select:focus, .export-option input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 3px #68dba019; }
+.export-option input::placeholder { color: #778595; }
+.export-help { margin: 9px 0 0; color: var(--muted); font-size: 10px; }
 .output-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 29px; padding-top: 23px; border-top: 1px solid #303b48; }
 .output-row h3 { margin: 5px 0 4px; font: 700 16px "Segoe UI Variable", "Aptos", sans-serif; }
 .output-row .button { min-width: 135px; min-height: 46px; }
@@ -106,6 +113,7 @@ footer { display: flex; justify-content: space-between; gap: 15px; padding: 18px
   .input-row { align-items: stretch; flex-direction: column; }
   .input-row .button { min-height: 46px; }
   .crop-actions span { width: 100%; margin-left: 0; }
+  .export-options { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 14px; }
   .selection-info { flex-wrap: wrap; }
   .selection-info strong { font-size: 14px; }
   .limit-badge { margin-left: auto; }

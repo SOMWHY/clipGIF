@@ -106,6 +106,61 @@
           <span class="keyboard-hint">方向键微调 · 0.1 秒</span>
         </div>
 
+        <div class="export-options" aria-label="GIF 导出设置">
+          <div class="export-option">
+            <label for="outputWidth">输出宽度</label>
+            <select id="outputWidth">
+              <option value="">默认（最大 480，不放大）</option>
+              <option value="320">320 px</option>
+              <option value="480">480 px</option>
+              <option value="640">640 px</option>
+              <option value="custom">自定义</option>
+            </select>
+            <input id="customWidth" type="number" min="64" max="1280" step="1"
+              placeholder="自定义宽度（64–1280）" aria-label="自定义输出宽度" hidden>
+          </div>
+          <div class="export-option">
+            <label for="outputHeight">输出高度</label>
+            <input id="outputHeight" type="number" min="64" max="1280" step="1"
+              placeholder="留空则按比例自动计算">
+          </div>
+          <div class="export-option">
+            <label for="outputSpeed">播放速度</label>
+            <select id="outputSpeed">
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+          </div>
+          <div class="export-option">
+            <label for="outputFps">帧率</label>
+            <select id="outputFps">
+              <option value="" selected>默认（12 FPS）</option>
+              <option value="5">5 FPS</option>
+              <option value="10">10 FPS</option>
+              <option value="15">15 FPS</option>
+              <option value="20">20 FPS</option>
+            </select>
+          </div>
+          <div class="export-option">
+            <label for="outputColors">最大颜色数</label>
+            <select id="outputColors">
+              <option value="64">64</option>
+              <option value="128" selected>128</option>
+              <option value="256">256</option>
+            </select>
+          </div>
+          <div class="export-option">
+            <label for="outputDither">抖动方式</label>
+            <select id="outputDither">
+              <option value="sierra2_4a" selected>Sierra 2-4A（平滑）</option>
+              <option value="bayer">Bayer（规整）</option>
+            </select>
+          </div>
+        </div>
+        <p class="export-help">宽高比例不一致时会补黑边，不会拉伸画面。裁切只改变 GIF 画幅。</p>
+
         <div class="output-row">
           <div>
             <p class="step-label">03 / EXPORT</p>

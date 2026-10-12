@@ -17,6 +17,12 @@
     midTime: $("#midTime"),
     endTime: $("#endTime"),
   }, video);
+  const cropOverlay = window.ClipGifCrop.createCropOverlay({
+    frame: $("#videoFrame"),
+    video,
+    toggle: $("#cropToggle"),
+    reset: $("#cropReset"),
+  });
 
   let previewId = null;
   let previewLoop = false;
@@ -79,6 +85,7 @@
     loadButton.disabled = true;
     resultPanel.hidden = true;
     editor.hidden = true;
+    cropOverlay.setEnabled(false);
     showNotice("正在提交视频…");
     try {
       const response = await fetch("/api/previews", { method: "POST", body: data });
@@ -125,11 +132,54 @@
   $("#jumpStart").addEventListener("click", () => timeline.jumpToStart());
   $("#jumpEnd").addEventListener("click", () => timeline.jumpToEnd());
 
+  function readDimension(input, label) {
+    if (!input.value) return null;
+    const value = Number(input.value);
+    if (!Number.isInteger(value) || value < 64 || value > 1280) {
+      throw new Error(`${label}须为 64 到 1280 之间的整数。`);
+    }
+    return value;
+  }
+
+  function readExportOptions() {
+    const widthChoice = $("#outputWidth").value;
+    const width = widthChoice === "custom"
+      ? readDimension($("#customWidth"), "自定义宽度")
+      : widthChoice ? Number(widthChoice) : null;
+    if (widthChoice === "custom" && width === null) {
+      throw new Error("请输入自定义输出宽度。");
+    }
+    const options = {
+      speed: Number($("#outputSpeed").value),
+      max_colors: Number($("#outputColors").value),
+      dither: $("#outputDither").value,
+    };
+    const height = readDimension($("#outputHeight"), "输出高度");
+    const fps = $("#outputFps").value ? Number($("#outputFps").value) : null;
+    if (width !== null) options.width = width;
+    if (height !== null) options.height = height;
+    if (fps !== null) options.fps = fps;
+    const crop = cropOverlay.region();
+    if (crop !== null) options.crop = crop;
+    return options;
+  }
+
+  $("#outputWidth").addEventListener("change", (event) => {
+    $("#customWidth").hidden = event.target.value !== "custom";
+  });
+
   generateButton.addEventListener("click", async () => {
     if (!previewId) return;
     const { start, end } = timeline.values();
     if (end <= start || end - start > 60) {
       showNotice("请选择大于 0 秒且不超过 60 秒的片段。", true);
+      return;
+    }
+    let options;
+    try {
+      options = readExportOptions();
+    } catch (error) {
+      showNotice(error.message || "请检查 GIF 导出设置。", true);
       return;
     }
     generateButton.disabled = true;
@@ -138,7 +188,7 @@
       const response = await fetch(`/api/previews/${previewId}/gif`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ start, end }),
+        body: JSON.stringify({ start, end, ...options }),
       });
       if (!response.ok) throw new Error(await readError(response));
       const task = await response.json();
