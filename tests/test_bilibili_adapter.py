@@ -8,6 +8,12 @@ def adapter():
     return BilibiliAdapter()
 
 
+def test_default_format_prefers_480p_then_falls_back_to_best(adapter):
+    assert adapter.get_default_format() == (
+        "bv*[height<=480]+ba/b[height<=480]/bv*+ba/b"
+    )
+
+
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [

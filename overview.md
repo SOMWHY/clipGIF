@@ -186,7 +186,7 @@ class PlatformAdapter(ABC):
         return {}
 
     def get_default_format(self) -> str:
-        """默认下载格式，优先 480p 或更低。"""
+        """默认下载格式，基础实现优先 480p 或更低。"""
         return "bv*[height<=480]+ba/b[height<=480]"
 
     def validate(self, raw_input: str) -> tuple[bool, str]:
@@ -246,7 +246,7 @@ app/
 - 支持 b23.tv 短链，需跟随重定向解析出 BV
 - 提供 B站 cookie 获取说明
 - 提供 B站常见水印位置预设，例如右上角、右下角
-- 默认下载 480p 或更低
+- 优先下载 480p 或更低；若没有该范围内的格式，则回退到可用的最佳格式
 - 对需要登录的视频给出友好错误提示
 
 其他平台适配器只需留空文件或 `example`，不要求现在可用。但测试中必须验证“新增一个假平台适配器，核心流程无需修改即可识别并调用”。
@@ -261,7 +261,7 @@ app/
 
 2. **下载源视频**
    - 使用 yt-dlp 下载到 `work/{preview_id}/source.*`
-   - 默认优先 480p 或更低，格式由适配器提供
+   - 默认优先 480p 或更低；B 站没有该范围内的格式时回退到可用的最佳格式
    - 无 cookie 失败时，前端提示可上传 `cookies.txt`，或把 `cookies.txt` 放到项目根目录自动使用
    - README 用小白语言说明如何导出 Netscape 格式 cookies.txt
 

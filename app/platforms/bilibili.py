@@ -100,7 +100,7 @@ class BilibiliAdapter(PlatformAdapter):
         return match.group(0) if match else None
 
     def get_default_format(self) -> str:
-        return "bv*[height<=480]+ba/b[height<=480]"
+        return "bv*[height<=480]+ba/b[height<=480]/bv*+ba/b"
 
     def get_cookie_help(self) -> str:
         return (
