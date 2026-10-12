@@ -67,6 +67,14 @@
     notice.hidden = !message;
   }
 
+  const exportNotice = $("#exportNotice");
+
+  function showExportNotice(message, isError = false) {
+    exportNotice.textContent = message;
+    exportNotice.classList.toggle("notice-error", isError);
+    exportNotice.hidden = !message;
+  }
+
   async function readError(response) {
     let detail = "请求失败，请稍后重试。";
     try {
@@ -106,7 +114,7 @@
       const state = await response.json();
       if (state.status === "success") return state;
       if (state.status === "failed") throw new Error(state.error || "GIF 生成失败。");
-      showNotice(state.status === "transcoding" ? "正在转码 GIF…" : "正在剪辑片段并生成调色板…");
+      showExportNotice(state.status === "transcoding" ? "正在转码 GIF…" : "正在剪辑片段并生成调色板…");
     }
     throw new Error("GIF 生成时间过长，请稍后重试。");
   }
@@ -120,6 +128,7 @@
     resultPanel.hidden = true;
     editor.hidden = true;
     cropOverlay.setEnabled(false);
+    showExportNotice("");
     showNotice("正在提交视频…");
     try {
       const response = await fetch("/api/previews", { method: "POST", body: data });
@@ -206,18 +215,19 @@
     if (!previewId) return;
     const { start, end } = timeline.values();
     if (end <= start || end - start > 60) {
-      showNotice("请选择大于 0 秒且不超过 60 秒的片段。", true);
+      showExportNotice("请选择大于 0 秒且不超过 60 秒的片段。", true);
       return;
     }
     let options;
     try {
       options = readExportOptions();
     } catch (error) {
-      showNotice(error.message || "请检查 GIF 导出设置。", true);
+      showExportNotice(error.message || "请检查 GIF 导出设置。", true);
       return;
     }
     generateButton.disabled = true;
-    showNotice("正在创建 GIF 任务…");
+    showNotice("");
+    showExportNotice("正在创建 GIF 任务…");
     try {
       const response = await fetch(`/api/previews/${previewId}/gif`, {
         method: "POST",
@@ -230,13 +240,13 @@
       $("#gifPreview").src = `${result.gif_url}?v=${Date.now()}`;
       $("#downloadButton").href = result.download_url;
       revealResult();
-      showNotice("GIF 已生成，可以预览并下载。");
+      showExportNotice("");
       resultPanel.scrollIntoView({
         behavior: prefersReducedMotion() ? "auto" : "smooth",
         block: "start",
       });
     } catch (error) {
-      showNotice(error.message || "GIF 生成失败。", true);
+      showExportNotice(error.message || "GIF 生成失败。", true);
     } finally {
       generateButton.disabled = false;
     }

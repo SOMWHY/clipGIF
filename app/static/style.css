@@ -508,6 +508,7 @@ select:focus-visible {
 .output-row .button { min-width: 135px; min-height: 45px; }
 .notice { margin-top: 18px; padding: 12px 0; border-top: 1px solid #a5ab92; color: var(--olive-dark); font-size: 12px; line-height: 1.6; }
 .notice-error { border-color: #ad7666; color: #7b3829; }
+.export-notice { margin-top: 12px; overflow-wrap: anywhere; }
 .result-panel .section-heading { margin-bottom: 16px; }
 
 .gif-frame {
