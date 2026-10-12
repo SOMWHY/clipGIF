@@ -58,8 +58,18 @@ label { display: block; margin-bottom: 9px; color: #d2d9df; font-size: 12px; fon
 .upload-icon { display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid #516072; border-radius: 5px; color: var(--mint); }
 #cookieFile { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
 .platform-badge, .duration-badge { padding: 7px 10px; border: 1px solid #33483e; border-radius: 99px; color: var(--mint); background: #1c3028; font: 500 10px Consolas, monospace; }
-.video-frame { overflow: hidden; display: grid; place-items: center; min-height: 220px; border: 1px solid #111923; border-radius: 10px; background: #090d12; }
+.video-frame { position: relative; overflow: hidden; display: grid; place-items: center; min-height: 220px; border: 1px solid #111923; border-radius: 10px; background: #090d12; }
 .video-frame video { display: block; width: 100%; max-height: 490px; }
+.crop-overlay { position: absolute; z-index: 2; pointer-events: none; }
+.crop-box { position: absolute; border: 2px solid var(--mint); box-shadow: 0 0 0 9999px #05090f70; cursor: move; pointer-events: auto; touch-action: none; }
+.crop-handle { position: absolute; width: 14px; height: 14px; padding: 0; border: 2px solid #153024; border-radius: 4px; background: #ecfff3; pointer-events: auto; touch-action: none; }
+.crop-handle:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.crop-handle-nw { top: 0; left: 0; transform: translate(-50%, -50%); cursor: nwse-resize; }
+.crop-handle-ne { top: 0; right: 0; transform: translate(50%, -50%); cursor: nesw-resize; }
+.crop-handle-sw { bottom: 0; left: 0; transform: translate(-50%, 50%); cursor: nesw-resize; }
+.crop-handle-se { right: 0; bottom: 0; transform: translate(50%, 50%); cursor: nwse-resize; }
+.crop-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.crop-actions span { margin-left: auto; color: var(--muted); font-size: 11px; }
 .selection-info { display: flex; align-items: baseline; gap: 11px; margin: 24px 0 18px; }
 .selection-caption { color: var(--muted); font-size: 11px; }
 .selection-info strong { font: 500 16px Consolas, monospace; color: var(--mint); letter-spacing: -.02em; }
@@ -95,6 +105,7 @@ footer { display: flex; justify-content: space-between; gap: 15px; padding: 18px
   .panel { padding: 21px 18px 22px; }
   .input-row { align-items: stretch; flex-direction: column; }
   .input-row .button { min-height: 46px; }
+  .crop-actions span { width: 100%; margin-left: 0; }
   .selection-info { flex-wrap: wrap; }
   .selection-info strong { font-size: 14px; }
   .limit-badge { margin-left: auto; }

@@ -8,6 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   <link rel="stylesheet" href="/static/style.css">
   <script src="/static/timeline.js" defer></script>
+  <script src="/static/crop.js" defer></script>
   <script src="/static/app.js" defer></script>
 </head>
 <body>
@@ -64,8 +65,21 @@
           <span id="durationBadge" class="duration-badge"></span>
         </div>
 
-        <div class="video-frame">
+        <div id="videoFrame" class="video-frame">
           <video id="sourceVideo" controls playsinline preload="metadata"></video>
+          <div class="crop-overlay" data-crop-overlay hidden>
+            <div class="crop-box" data-crop-box>
+              <button class="crop-handle crop-handle-nw" type="button" data-handle="nw" aria-label="调整裁切框左上角"></button>
+              <button class="crop-handle crop-handle-ne" type="button" data-handle="ne" aria-label="调整裁切框右上角"></button>
+              <button class="crop-handle crop-handle-sw" type="button" data-handle="sw" aria-label="调整裁切框左下角"></button>
+              <button class="crop-handle crop-handle-se" type="button" data-handle="se" aria-label="调整裁切框右下角"></button>
+            </div>
+          </div>
+        </div>
+        <div class="crop-actions">
+          <button id="cropToggle" class="button button-secondary" type="button" aria-pressed="false">启用裁切</button>
+          <button id="cropReset" class="button button-quiet" type="button" disabled>重置画幅</button>
+          <span>拖动选框移动，拖动四角调整大小</span>
         </div>
 
         <div class="selection-info">

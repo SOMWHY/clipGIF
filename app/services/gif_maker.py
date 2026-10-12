@@ -75,7 +75,12 @@ def _scale_and_pad_filters(
 
 def _build_video_filter(request: GifRequest, frame_width: int, frame_height: int) -> str:
     filters: list[str] = []
-    if request.crop is not None:
+    if request.crop is not None and (
+        request.crop.x > 0
+        or request.crop.y > 0
+        or request.crop.width < 1
+        or request.crop.height < 1
+    ):
         filters.append(_crop_filter(request.crop, frame_width, frame_height))
     if request.speed != 1:
         filters.append(f"setpts=PTS/{request.speed:g}")

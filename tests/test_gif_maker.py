@@ -190,6 +190,11 @@ def test_crop_filter_rejects_region_smaller_than_minimum():
         gif_maker._crop_filter(crop, 320, 240)
 
 
+def test_full_frame_crop_preserves_the_original_odd_frame():
+    request = GifRequest(start=0, end=3, crop={"x": 0, "y": 0, "width": 1, "height": 1})
+    assert not gif_maker._build_video_filter(request, 1279, 719).startswith("crop=")
+
+
 def test_make_gif_uses_identical_video_filters_for_palette_and_output(monkeypatch, tmp_path):
     source = tmp_path / "source.mp4"
     source.write_bytes(b"source")
