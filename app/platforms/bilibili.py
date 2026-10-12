@@ -102,12 +102,6 @@ class BilibiliAdapter(PlatformAdapter):
     def get_default_format(self) -> str:
         return "bv*[height<=480]+ba/b[height<=480]"
 
-    def get_watermark_presets(self) -> dict[str, dict[str, int]]:
-        return {
-            "top_right": {"x": 820, "y": 20, "w": 160, "h": 80},
-            "bottom_right": {"x": 820, "y": 820, "w": 160, "h": 140},
-        }
-
     def get_cookie_help(self) -> str:
         return (
             "如视频需要登录，请使用浏览器扩展导出 Netscape 格式 cookies.txt，"

@@ -1,4 +1,7 @@
+import json
 from pathlib import Path
+import shutil
+import subprocess
 from types import SimpleNamespace
 
 import pytest
@@ -214,3 +217,65 @@ def test_make_gif_uses_identical_video_filters_for_palette_and_output(monkeypatc
     assert palette_filter in output_graph
     assert "palettegen=max_colors=64" in calls[0][calls[0].index("-vf") + 1]
     assert "paletteuse=dither=bayer" in output_graph
+
+
+def test_make_gif_crop_speed_and_canvas_with_real_ffmpeg(tmp_path):
+    ffmpeg = shutil.which("ffmpeg")
+    ffprobe = shutil.which("ffprobe")
+    assert ffmpeg is not None and ffprobe is not None, "install ffmpeg and ffprobe to run media tests"
+    source = tmp_path / "source.mp4"
+    output = tmp_path / "result.gif"
+    subprocess.run(
+        [
+            ffmpeg,
+            "-y",
+            "-f",
+            "lavfi",
+            "-i",
+            "testsrc2=size=160x120:rate=20:duration=2",
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            str(source),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    request = GifRequest(
+        start=0,
+        end=2,
+        crop={"x": 0.25, "y": 0.25, "width": 0.5, "height": 0.5},
+        width=80,
+        height=80,
+        fps=10,
+        speed=2,
+        max_colors=64,
+        dither="bayer",
+    )
+    gif_maker.make_gif(source, output, request, 160, 120)
+    probe = subprocess.run(
+        [
+            ffprobe,
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration:stream=width,height",
+            "-of",
+            "json",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    result = json.loads(probe.stdout)
+    assert (result["streams"][0]["width"], result["streams"][0]["height"]) == (80, 80)
+    assert abs(float(result["format"]["duration"]) - 1.0) <= 0.2
+    subprocess.run(
+        [ffmpeg, "-v", "error", "-i", str(output), "-f", "null", "-"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )

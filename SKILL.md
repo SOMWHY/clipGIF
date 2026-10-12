@@ -20,12 +20,37 @@ ClipGIF 是 FastAPI 本地网页应用。页面只连接到本机 `127.0.0.1` �
 | `POST` | `/api/previews` | multipart 表单创建视频预览，字段 `url`，可选 `cookies` 文件 |
 | `GET` | `/api/previews/{preview_id}` | 查询预览任务状态与媒体元信息 |
 | `GET`, `HEAD` | `/api/previews/{preview_id}/video` | 预览 MP4，支持 HTTP Range/206 |
-| `POST` | `/api/previews/{preview_id}/gif` | JSON `{ "start": 0.0, "end": 3.0 }` 创建 GIF 作业 |
+| `POST` | `/api/previews/{preview_id}/gif` | JSON 创建 GIF 作业；支持选区和可选裁切/尺寸/速度/画质参数 |
 | `GET` | `/api/tasks/{task_id}` | 查询 GIF 作业状态 |
 | `GET` | `/api/tasks/{task_id}/gif` | GIF 预览 |
 | `GET` | `/api/tasks/{task_id}/download` | 下载 GIF |
 
 作业状态保存在进程内存，服务重启后状态不保留。服务最多同时运行 2 个媒体作业；预览在 `previews/`、源文件在 `work/{preview_id}/`、GIF 在 `outputs/`。
+
+### GIF 导出参数
+
+`POST /api/previews/{preview_id}/gif` 至少需要 `start`、`end` 秒。其余字段可选：
+
+```json
+{
+  "start": 12.5,
+  "end": 18,
+  "crop": {"x": 0.1, "y": 0.1, "width": 0.8, "height": 0.8},
+  "width": 480,
+  "height": null,
+  "fps": 10,
+  "speed": 1.5,
+  "max_colors": 128,
+  "dither": "sierra2_4a"
+}
+```
+
+- `crop` 是可选的归一化矩形 `{x, y, width, height}`，值域为 0–1；省略时保留完整画幅。网页支持拖动裁切框和四角手柄；框外部分只从输出 GIF 中裁掉。
+- `width`、`height` 为可选整数，范围 64–1280。两者都省略时沿用旧默认：宽度至多 480 px，源画面较小时不放大。仅给一个尺寸时另一个按裁切画幅比例计算；两者都给出但比例不同则等比缩放后以黑边补齐，不拉伸。
+- `speed` 只能为 0.5、1、1.5、2；较快速度会按比例缩短 GIF 时长，不改变所选源视频区间。
+- `fps` 可选 5、10、15、20；省略时沿用 12 FPS 默认。
+- `max_colors` 可选 64、128、256；`dither` 可选 `bayer`、`sierra2_4a`。省略时使用 128 色和 `sierra2_4a`。
+- 裁切仅改变画幅，不做图像修复；选区最长 60 秒，GIF 不超过 50 MB。
 
 ## 常用命令
 

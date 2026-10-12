@@ -33,9 +33,6 @@ class PlatformAdapter(ABC):
     def get_default_format(self) -> str:
         return "bv*[height<=480]+ba/b[height<=480]"
 
-    def get_watermark_presets(self) -> dict[str, Any]:
-        return {}
-
     def validate(self, raw_input: str) -> tuple[bool, str]:
         return True, ""
 

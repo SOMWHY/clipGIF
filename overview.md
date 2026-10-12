@@ -189,10 +189,6 @@ class PlatformAdapter(ABC):
         """默认下载格式，优先 480p 或更低。"""
         return "bv*[height<=480]+ba/b[height<=480]"
 
-    def get_watermark_presets(self) -> dict[str, Any]:
-        """平台常见水印位置预设。没有就返回空字典。"""
-        return {}
-
     def validate(self, raw_input: str) -> tuple[bool, str]:
         """平台级校验，返回 (是否合法, 错误信息)。"""
         return True, ""
@@ -315,11 +311,11 @@ app/
    - 支持输出宽度，如 320、480、640；高度按比例自动
    - 也支持指定宽高，但要做边界校验
 
-2. **去水印**
-   - 不承诺 AI 完美去水印。实现为“裁剪掉水印区域”或“遮盖水印区域”
-   - 提供预设：右上角、右下角、底部、自定义 x/y/w/h
-   - 预设可由平台适配器提供
-   - 开启后，输出 GIF 中对应区域不应再出现水印
+2. **自由裁切 GIF 画幅**
+   - 在视频画面上显示可拖动、可调整大小的自由裁切框，并可重置为完整画幅
+   - 裁切框默认关闭；启用后只影响 GIF 输出，不改变源视频或预览
+   - 后端接收相对于原始画幅的归一化 x/y/width/height，使用源视频裁切
+   - 裁切区域须在画面内且不小于 16×16 像素；裁切只改变输出画幅，不修改保留区域的图像内容
 
 3. **倍速调整**
    - 支持 0.5x、1x、1.5x、2x
@@ -379,14 +375,13 @@ app/
   {
     "start": 12.5,
     "end": 18.0,
+    "crop": {"x": 0.1, "y": 0.1, "width": 0.8, "height": 0.8},
     "width": 480,
     "height": null,
     "fps": 10,
     "speed": 1.0,
-    "remove_watermark": false,
-    "watermark_preset": "top_right",
     "max_colors": 128,
-    "dither": "bayer"
+    "dither": "sierra2_4a"
   }
   ```
   返回：
@@ -456,7 +451,7 @@ app/
    - 新建 `app/platforms/xxx.py`
    - 继承 `PlatformAdapter`
    - 实现 `match`、`normalize`、`extract_video_id`
-   - 可选覆盖 `get_ytdlp_options`、`get_watermark_presets`
+   - 可选覆盖 `get_ytdlp_options`
    - 如何加测试
    - 如何更新 README 支持列表
 7. 写 `docs/platform-support.md`，面向贡献者（操作系统平台），内容按第 3 节的支持矩阵。
@@ -537,7 +532,7 @@ clipgif/
 12. 非法输入：错误 BV、结束时间小于等于开始、超过 60 秒，网页显示中文错误，后端不崩溃。
 13. 开启“倍速 2x”后，输出 GIF 时长约为原选区的 1/2。
 14. 开启“宽度 320、fps 10、颜色数 128”后，GIF 尺寸和体积明显变化。
-15. 开启“去水印”后，指定水印区域被裁剪或遮盖。
+15. 启用“裁切”并调整裁切框后，GIF 只保留所选画幅；重置后恢复完整画面，不承诺修复框内图像内容。
 16. 所有 subprocess 无 `shell=True`，命令注入测试无效。
 17. `README.md` 和 `SKILL.md` 存在，且小白能按步骤启动。
 

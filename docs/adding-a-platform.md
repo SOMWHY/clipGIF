@@ -11,7 +11,7 @@
    - `validate(raw_input: str) -> tuple[bool, str]`：用中文说明无法安全处理的输入。
    - `normalize(raw_input: str) -> str`：转换为 yt-dlp 可处理的规范 URL；短链解析必须限制协议、目标主机、重定向次数和超时。
    - `extract_video_id(normalized_url: str) -> str | None`：提取平台视频 ID。
-4. 根据需要覆盖 `get_ytdlp_options(user_options)`、`get_default_format()`、`get_watermark_presets()`、`get_cookie_help()` 和 `format_download_error(error)`。平台特有登录、限流和缺失视频提示应留在适配器中。不得把用户输入拼接进 shell 命令，也不得在代码中硬编码凭据。
+4. 根据需要覆盖 `get_ytdlp_options(user_options)`、`get_default_format()`、`get_cookie_help()` 和 `format_download_error(error)`。平台特有登录、限流和缺失视频提示应留在适配器中。不得把用户输入拼接进 shell 命令，也不得在代码中硬编码凭据。
 5. 返回准确的 `PlatformInfo`：平台名、中文显示名、URL 提示和 Cookie 获取说明。
 
 ## 测试与文档

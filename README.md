@@ -9,7 +9,7 @@ ClipGIF 是一个在你自己电脑上运行的本地网页应用：浏览器提
 - 视频平台：完整支持 B 站 BV 号、`bilibili.com` 视频链接和 `b23.tv` 短链。
 - 未来计划欢迎贡献 YouTube、Vimeo、X/Twitter 及更多 yt-dlp 支持平台。
 - 操作系统：Windows 10/11 完整支持；macOS 和 Linux 脚本目前为实验性占位实现；Docker 尚未实现。
-- P1 高级设置（自定义尺寸、倍速、去水印和可调画质参数）尚未实现，GIF 使用固定默认参数；filmstrip 时间轴缩略图也暂未提供。
+- GIF 导出支持画幅裁切、自定义尺寸、倍速和画质参数；可选的 filmstrip 时间轴缩略图尚未实现。
 
 欢迎贡献其他 yt-dlp 支持平台。参见[新增视频平台指南](docs/adding-a-platform.md)和[操作系统支持矩阵](docs/platform-support.md)。
 
@@ -53,7 +53,15 @@ python -m app.main
 2. 如视频要求登录，可从浏览器导出 **Netscape 格式**的 `cookies.txt` 并在加载时上传。Cookie 只用于该次下载，服务不会自动读取项目根目录中的 cookie 文件，也不会记录 cookie 内容；下载成功或失败后会删除临时文件。
 3. 等待预览视频出现。拖动时间轴的两个滑块设置起止时间；起止显示到 0.1 秒，按左右方向键可微调当前聚焦滑块。
 4. 点击“预览选区”循环播放所选片段，使用“跳到起点/终点”进行微调。选区必须大于 0 秒且不超过 60 秒。
-5. 点击“生成 GIF”，等待转码完成后预览，并点击“下载 GIF”保存文件。
+5. 如需调整画幅，点击“启用裁切”，拖动框内区域移动裁切框，拖动四角调整大小；点击“重置画幅”恢复完整画面。关闭裁切后导出完整画幅。
+6. 在“GIF 导出设置”中按需设置宽、高、速度、FPS、颜色数和抖动方式：
+   - 宽度可选 320、480、640 px 或自定义；高度留空时自动按比例计算。宽高比例不一致时会等比缩放并补黑边，不会拉伸。
+   - 速度可选 0.5×、1×、1.5×、2×；速度越快，生成的 GIF 时长越短，源视频选段不变。
+   - FPS 可选 5、10、15、20；颜色数可选 64、128、256；抖动可选 Bayer 或 Sierra 2-4A。
+   - 默认行为与原版本一致：不裁切、宽度最多 480 px（较小画面不放大）、12 FPS、1×、128 色、Sierra 2-4A。
+7. 点击“生成 GIF”，等待转码完成后预览，并点击“下载 GIF”保存文件。
+
+裁切只改变 GIF 的画幅，不会修复裁切框内的图像内容。自定义宽高限制为 64–1280 px；GIF 大于 50 MB 时请缩短片段、降低宽度、帧率或颜色数。
 
 浏览器视频播放器通过 HTTP Range 支持拖动 seek；预览视频由 ffmpeg 输出为 H.264/AAC MP4，并带有 fast-start 元数据。
 
@@ -66,7 +74,7 @@ python -m app.main
 - **提示找不到 ffmpeg/ffprobe**：按上文安装，并确认 `ffmpeg -version` 和 `ffprobe -version` 可在新开的终端中运行，然后重新启动服务。
 - **yt-dlp 下载失败**：确认链接有效、网络正常，并升级项目虚拟环境中的 yt-dlp：`.venv\Scripts\python.exe -m pip install --upgrade yt-dlp`。
 - **提示需要登录**：上传从浏览器导出的 Netscape 格式 `cookies.txt`。不要将 cookie 内容发给他人。
-- **GIF 太大**：当前 MVP 限制输出 GIF 不超过 50 MB；请缩短片段后重试。P1 的尺寸和压缩选项暂未实现。
+- **GIF 太大**：输出限制为 50 MB；请缩短片段，或降低输出宽度、FPS、最大颜色数后重试。
 - **预览不能拖动进度条**：使用最新版本的启动依赖，并重新加载预览；后端视频响应支持 HTTP Range（部分内容请求返回 206）。
 - **检查 Range 响应**：将 `{preview_id}` 替换为页面任务 ID，运行 `curl.exe -H "Range: bytes=0-100" http://127.0.0.1:8000/api/previews/{preview_id}/video -I`，预期返回 `206`。
 - **提示平台不支持**：当前仅完整支持 B 站；YouTube、Vimeo、X/Twitter 和本地文件尚未实现。
@@ -79,7 +87,7 @@ python -m app.main
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest -q
-node --test tests\test_timeline.js
+node --test tests\test_timeline.js tests\test_crop.js
 ```
 
 时间轴单测需要 Node.js 20+；这不是运行 ClipGIF 网页应用的依赖。
