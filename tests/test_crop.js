@@ -7,6 +7,8 @@ require("../app/static/crop.js");
 function makeElement(bounds = { left: 10, top: 20, width: 200, height: 100 }) {
   return {
     bounds,
+    clientLeft: 0,
+    clientTop: 0,
     hidden: false,
     disabled: false,
     textContent: "",
@@ -27,6 +29,109 @@ function makeElement(bounds = { left: 10, top: 20, width: 200, height: 100 }) {
     },
   };
 }
+
+test("contained video bounds exclude portrait side letterboxing", () => {
+  assert.deepEqual(
+    window.ClipGifCrop.containedVideoBounds(
+      { left: 0, top: 0, width: 600, height: 400 },
+      270,
+      480,
+    ),
+    { left: 187.5, top: 0, width: 225, height: 400 },
+  );
+});
+
+test("contained video bounds exclude landscape top and bottom letterboxing", () => {
+  assert.deepEqual(
+    window.ClipGifCrop.containedVideoBounds(
+      { left: 0, top: 0, width: 400, height: 600 },
+      640,
+      360,
+    ),
+    { left: 0, top: 187.5, width: 400, height: 225 },
+  );
+});
+
+test("contained video bounds are unavailable before metadata or with empty layout", () => {
+  assert.equal(
+    window.ClipGifCrop.containedVideoBounds(
+      { left: 0, top: 0, width: 400, height: 600 },
+      0,
+      0,
+    ),
+    null,
+  );
+  assert.equal(
+    window.ClipGifCrop.containedVideoBounds(
+      { left: 0, top: 0, width: 0, height: 600 },
+      640,
+      360,
+    ),
+    null,
+  );
+});
+
+test("crop overlay waits for metadata before enabling crop interaction", () => {
+  const overlay = makeElement();
+  overlay.hidden = true;
+  const box = makeElement();
+  overlay.querySelector = () => box;
+  const frame = makeElement();
+  frame.querySelector = () => overlay;
+  const video = makeElement();
+  video.videoWidth = 0;
+  video.videoHeight = 0;
+  const toggle = makeElement();
+  const reset = makeElement();
+  const crop = window.ClipGifCrop.createCropOverlay({ frame, video, toggle, reset });
+
+  reset.dispatch("click");
+  assert.equal(overlay.hidden, true);
+  box.dispatch("pointerdown", {
+    target: { closest: () => ({ dataset: { handle: "nw" } }) },
+    pointerId: 1,
+    clientX: 20,
+    clientY: 30,
+    preventDefault() {},
+  });
+  box.dispatch("pointermove", { pointerId: 1, clientX: 40, clientY: 50 });
+  assert.deepEqual(crop.region(), { x: 0, y: 0, width: 1, height: 1 });
+
+  video.videoWidth = 640;
+  video.videoHeight = 360;
+  video.dispatch("loadedmetadata");
+  assert.equal(overlay.hidden, false);
+});
+
+test("portrait crop resize is normalized against the image, not letterboxing", () => {
+  const overlay = makeElement({ left: 0, top: 0, width: 600, height: 400 });
+  overlay.hidden = true;
+  const box = makeElement();
+  overlay.querySelector = () => box;
+  const frame = makeElement({ left: 0, top: 0, width: 600, height: 400 });
+  frame.querySelector = () => overlay;
+  const video = makeElement({ left: 0, top: 0, width: 600, height: 400 });
+  video.videoWidth = 270;
+  video.videoHeight = 480;
+  const toggle = makeElement();
+  const reset = makeElement();
+  const crop = window.ClipGifCrop.createCropOverlay({ frame, video, toggle, reset });
+
+  reset.dispatch("click");
+  assert.equal(overlay.style.left, "187.5px");
+  assert.equal(overlay.style.width, "225px");
+  box.dispatch("pointerdown", {
+    target: { closest: () => ({ dataset: { handle: "nw" } }) },
+    pointerId: 1,
+    clientX: 200,
+    clientY: 200,
+    preventDefault() {},
+  });
+  box.dispatch("pointermove", { pointerId: 1, clientX: 290, clientY: 200 });
+  box.dispatch("pointerup", { pointerId: 1 });
+
+  assert.deepEqual(crop.region(), { x: 0.4, y: 0, width: 0.6, height: 1 });
+});
 
 test("crop rect stays inside the frame when moved", () => {
   const frame = { left: 10, top: 20, width: 200, height: 100 };

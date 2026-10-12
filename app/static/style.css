@@ -297,6 +297,8 @@ select:focus-visible {
   display: block;
   width: 100%;
   max-height: 490px;
+  object-fit: contain;
+  object-position: center;
 }
 
 .crop-overlay {

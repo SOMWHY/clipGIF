@@ -15,6 +15,32 @@
     };
   }
 
+  function containedVideoBounds(bounds, videoWidth, videoHeight) {
+    if (
+      !Number.isFinite(bounds.left)
+      || !Number.isFinite(bounds.top)
+      || !Number.isFinite(bounds.width)
+      || !Number.isFinite(bounds.height)
+      || !Number.isFinite(videoWidth)
+      || !Number.isFinite(videoHeight)
+      || bounds.width <= 0
+      || bounds.height <= 0
+      || videoWidth <= 0
+      || videoHeight <= 0
+    ) {
+      return null;
+    }
+    const scale = Math.min(bounds.width / videoWidth, bounds.height / videoHeight);
+    const width = videoWidth * scale;
+    const height = videoHeight * scale;
+    return {
+      left: bounds.left + (bounds.width - width) / 2,
+      top: bounds.top + (bounds.height - height) / 2,
+      width,
+      height,
+    };
+  }
+
   function moveRect(rect, dx, dy, bounds) {
     return {
       ...rect,
@@ -58,13 +84,11 @@
     let drag = null;
 
     function videoBounds() {
-      const bounds = video.getBoundingClientRect();
-      return {
-        left: bounds.left,
-        top: bounds.top,
-        width: bounds.width,
-        height: bounds.height,
-      };
+      return containedVideoBounds(
+        video.getBoundingClientRect(),
+        video.videoWidth,
+        video.videoHeight,
+      );
     }
 
     function pixelRect(bounds) {
@@ -79,11 +103,13 @@
     function render() {
       const bounds = videoBounds();
       const frameBounds = frame.getBoundingClientRect();
-      overlay.style.left = `${bounds.left - frameBounds.left}px`;
-      overlay.style.top = `${bounds.top - frameBounds.top}px`;
-      overlay.style.width = `${bounds.width}px`;
-      overlay.style.height = `${bounds.height}px`;
-      overlay.hidden = !enabled || !region || bounds.width <= 0 || bounds.height <= 0;
+      if (bounds) {
+        overlay.style.left = `${bounds.left - frameBounds.left - frame.clientLeft}px`;
+        overlay.style.top = `${bounds.top - frameBounds.top - frame.clientTop}px`;
+        overlay.style.width = `${bounds.width}px`;
+        overlay.style.height = `${bounds.height}px`;
+      }
+      overlay.hidden = !enabled || !region || !bounds;
       toggle.textContent = enabled ? "关闭裁切" : "启用裁切";
       toggle.setAttribute("aria-pressed", String(enabled));
       if (overlay.hidden) return;
@@ -100,9 +126,10 @@
     }
 
     function startDrag(event) {
-      if (!enabled || !region || video.videoWidth <= 0 || video.videoHeight <= 0) return;
+      if (!enabled || !region) return;
       const handle = event.target.closest?.("[data-handle]")?.dataset.handle;
       const bounds = videoBounds();
+      if (!bounds) return;
       const rect = pixelRect(bounds);
       const minWidth = Math.min(bounds.width, bounds.width * 16 / video.videoWidth);
       const minHeight = Math.min(bounds.height, bounds.height * 16 / video.videoHeight);
@@ -170,5 +197,11 @@
     };
   }
 
-  window.ClipGifCrop = { createCropOverlay, moveRect, normalizeRect, resizeRect };
+  window.ClipGifCrop = {
+    containedVideoBounds,
+    createCropOverlay,
+    moveRect,
+    normalizeRect,
+    resizeRect,
+  };
 })();
