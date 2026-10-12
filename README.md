@@ -16,20 +16,20 @@ ClipGIF 是一个在你自己电脑上运行的本地网页应用：浏览器提
 
 ## Windows 10/11 安装与启动
 
-1. 安装 **Python 3.11 或更高版本**，安装程序中勾选“Add Python to PATH”。
-2. 安装 ffmpeg 与 ffprobe。推荐在终端运行：
+1. 下载或解压本项目到一个普通文件夹。
+2. 双击项目目录中的 `start.bat`，或双击 `scripts\start_windows.bat`。脚本会检查 **Python 3.11 或更高版本**以及 `ffmpeg`、`ffprobe` 是否可用；如果缺少 Python 或 FFmpeg，会分别询问是否用 `winget` 安装 Python 3.13（`Python.Python.3.13`）或 FFmpeg（`Gyan.FFmpeg.Shared`）。只有在你确认后才会开始安装。
+3. 首次启动会在项目目录建立 `.venv` 并安装 Python 依赖，然后启动服务并打开浏览器。页面地址为 <http://127.0.0.1:8000>。若修改端口，可在启动前设置 `CLIPGIF_PORT` 环境变量。
+4. 关闭最小化的“ClipGIF server”窗口即可停止本地服务。
 
-   ```powershell
-   winget install --id Gyan.FFmpeg.Shared -e
-   ```
+如果缺少依赖且没有 `winget`、你拒绝安装，或自动安装失败，启动会停止并显示下一步。请手动安装 Python 3.11 或更高版本（[Python for Windows](https://www.python.org/downloads/windows/)），并确保 `py` 启动器或 `python` 命令可用；再从 [ffmpeg.org/download.html](https://ffmpeg.org/download.html) 获取 Windows 构建，将同时包含 `ffmpeg.exe` 和 `ffprobe.exe` 的 `bin` 文件夹加入 PATH。也可以在终端用以下命令安装 FFmpeg：
 
-   如果没有 winget，请从 [ffmpeg.org/download.html](https://ffmpeg.org/download.html) 下载 Windows 构建，并将包含 `ffmpeg.exe` 和 `ffprobe.exe` 的 `bin` 文件夹加入 PATH。重新打开终端后运行 `ffmpeg -version` 和 `ffprobe -version` 验证。
-3. 下载或解压本项目到一个普通文件夹。
-4. 双击项目目录中的 `start.bat`，或双击 `scripts\start_windows.bat`。首次启动会建立 `.venv` 并安装 Python 依赖；启动脚本会检查 ffmpeg/ffprobe 并打开浏览器。
-5. 页面地址为 <http://127.0.0.1:8000>。若修改端口，可在启动前设置 `CLIPGIF_PORT` 环境变量。
-6. 关闭最小化的“ClipGIF server”窗口即可停止本地服务。
+```powershell
+winget install --id Gyan.FFmpeg.Shared -e
+```
 
-启动期间需要网络来安装 Python 依赖及下载公开视频。ffmpeg 是系统工具，不会由 pip 自动安装。
+如果刚安装的工具暂时无法被检测到，请重新运行 `start.bat`，或打开一个新的终端再启动。若项目现有 `.venv` 中的 Python 低于 3.11，启动脚本会停止并提示手动重命名或删除旧 `.venv` 后重试。
+
+启动期间需要网络来安装系统工具（如有需要）、Python 依赖及下载公开视频。Python 依赖安装到项目的 `.venv`；FFmpeg 是系统工具，不会由 pip 安装。
 
 ## macOS（实验性）
 
@@ -78,7 +78,7 @@ ClipGIF 使用暖纸白背景、深墨色正文和克制的苔橄榄绿强调色
 
 ## 常见问题
 
-- **提示找不到 ffmpeg/ffprobe**：按上文安装，并确认 `ffmpeg -version` 和 `ffprobe -version` 可在新开的终端中运行，然后重新启动服务。
+- **依赖安装后仍提示找不到 Python 或 ffmpeg/ffprobe**：重新运行 `start.bat` 或打开新的终端再试。也可手动确认 `py -3 --version`（或 `python --version`）、`ffmpeg -version` 和 `ffprobe -version` 均可运行；如果不可用，请按上文手动安装并配置 PATH。
 - **yt-dlp 下载失败**：确认链接有效、网络正常，并升级项目虚拟环境中的 yt-dlp：`.venv\Scripts\python.exe -m pip install --upgrade yt-dlp`。
 - **提示需要登录**：上传从浏览器导出的 Netscape 格式 `cookies.txt`。不要将 cookie 内容发给他人。
 - **GIF 太大**：输出限制为 50 MB；请缩短片段，或降低输出宽度、FPS、最大颜色数后重试。
